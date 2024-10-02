@@ -24,24 +24,26 @@ let output = `Riepilogo crediti per ${lastWeekKey}:\n\n`;
 lastWeek.giornate.forEach(giornata => {
     let giorno = giornata.giorno.charAt(0).toUpperCase() + giornata.giorno.slice(1); // Capitalizza il giorno
     let credito = giornata.credito;
+
+    // Gestisci il segno per i crediti negativi
+    let sign = credito < 0 ? "-" : "";
+    credito = Math.abs(credito);
     
     // Converti il credito in ore e minuti
     let hours = Math.floor(credito / 60);
     let minutes = credito % 60;
     
     // Formatta l'output per ogni giornata
-    let creditoFormatted = `${hours}h`;
+    let creditoFormatted = `${sign}${hours}h`;
     if (minutes !== 0) {
-        creditoFormatted += ` ${Math.abs(minutes)}m`;
+        creditoFormatted += ` ${minutes}m`;
     }
     
     // Aggiungi orari di ingresso e uscita per le giornate di presenza nel formato (9:00 - 17:00)
     if (giornata.tipologia === "p") {
-        if (giornata.ingresso && giornata.uscita) {
-            output += `${giorno}: ${creditoFormatted} (${giornata.ingresso} - ${giornata.uscita})\n`;
-        } else {
-            output += `${giorno}: ${creditoFormatted} (Orari non disponibili)\n`;
-        }
+        let ingresso = giornata.ingresso ? giornata.ingresso : "nd";
+        let uscita = giornata.uscita ? giornata.uscita : "nd";
+        output += `${giorno}: ${creditoFormatted} (${ingresso} - ${uscita})\n`;
     } 
     // Aggiungi la dicitura "smart" per le giornate di smart working
     else if (giornata.tipologia === "s") {
@@ -52,14 +54,18 @@ lastWeek.giornate.forEach(giornata => {
 // Totale minutiCredito della settimana
 let totalMinutiCredito = lastWeek.minutiCredito;
 
+// Gestisci il segno per il totale
+let totalSign = totalMinutiCredito < 0 ? "-" : "";
+totalMinutiCredito = Math.abs(totalMinutiCredito);
+
 // Converti minuti in ore e minuti
 let totalHours = Math.floor(totalMinutiCredito / 60);
 let totalMinutes = totalMinutiCredito % 60;
 
 // Formatta l'output totale
-let totalFormatted = `${totalHours}h`;
+let totalFormatted = `${totalSign}${totalHours}h`;
 if (totalMinutes !== 0) {
-    totalFormatted += ` ${Math.abs(totalMinutes)}m`;
+    totalFormatted += ` ${totalMinutes}m`;
 }
 
 output += `\nTotale crediti della settimana: ${totalFormatted}`;
